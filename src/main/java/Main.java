@@ -28,7 +28,7 @@ public class Main {
 
             System.out.println("StudentsDB created successfully!");
 
-            // 4. Connect to the StudentsDB database
+            // 4. Connect to StudentsDB
             connection.close();
 
             connection = DriverManager.getConnection(
@@ -50,7 +50,7 @@ public class Main {
                     )
                     """;
 
-            // 7. Execute the SQL
+            // 7. Execute table creation
             statement.executeUpdate(sql);
 
             System.out.println("Students table created successfully!");
