@@ -1,40 +1,52 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Main {
 
+    static final String URL = "jdbc:mysql://localhost:3306/";
+    static final String USER = "root";
+    static final String PASSWORD = "bethelsis@28";
+
     public static void main(String[] args) {
 
-        String url = "jdbc:mysql://localhost:3306/university_db";
-        String username = "root";
-        String password = "bethelsis@28";
+        try (Connection connection =
+                     DriverManager.getConnection(URL, USER, PASSWORD);
+             Statement statement = connection.createStatement()) {
 
-
-
-        String sql = "INSERT INTO students (name, age, department) VALUES (?, ?, ?)";
-
-        try {
-            Connection connection = DriverManager.getConnection(
-                    url,
-                    username,
-                    password
+            // Create the database
+            statement.executeUpdate(
+                    "CREATE DATABASE IF NOT EXISTS StudentsDB"
             );
 
-            PreparedStatement statement = connection.prepareStatement(sql);
+            System.out.println("Connected to MySQL successfully!");
+            System.out.println("StudentsDB database created successfully!");
 
-            statement.setString(1, "Etsub");
-            statement.setInt(2, 22);
-            statement.setString(3, "Software Engineering");
+            // Connect to StudentsDB
+            try (Connection dbConnection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/StudentsDB",
+                    USER,
+                    PASSWORD
+            );
+                 Statement dbStatement = dbConnection.createStatement()) {
 
-            statement.executeUpdate();
+                // Create students table
+                String sql = """
+                        CREATE TABLE IF NOT EXISTS students (
+                            id INT PRIMARY KEY AUTO_INCREMENT,
+                            firstname VARCHAR(50),
+                            lastname VARCHAR(50),
+                            grade DOUBLE
+                        )
+                        """;
 
-            System.out.println("Student added successfully!");
+                dbStatement.executeUpdate(sql);
 
-            statement.close();
-            connection.close();
+                System.out.println("Students table created successfully!");
+            }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
